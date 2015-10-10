@@ -45,6 +45,9 @@ function DAMoveToPositionAction:Execute()
   elseif self:_IsMovementInterrupted(currentPosition) then
     self:Fail()
   else
+    if self:IsDebugOutputEnabled() then
+      self:_OutputDebugRunningInformation(currentPosition)
+    end
     self._lastPosition = entity:GetAbsOrigin()
     self._lastForwardVector = entity:GetForwardVector()
   end
@@ -92,7 +95,7 @@ end
 function DAMoveToPositionAction:_IsTurning()
   local currentForward = self:GetEntity():GetForwardVector()
   local similarity = DotProduct2D(currentForward, self._lastForwardVector)
-  return similarity < 0.99
+  return similarity < 0.95
 end
 
 function DAMoveToPositionAction:_CanFindPath(currentPosition)
@@ -103,4 +106,12 @@ function DAMoveToPositionAction:_CanFindPath(currentPosition)
     self._lastPathCheckTime = GameRules:GetGameTime()
   end
   return canFindPath
+end
+
+function DAMoveToPositionAction:_OutputDebugRunningInformation(currentPosition)
+  local messageFormat = "Continuing movement for %s. CurrentPosition: %s, Destination: %s"
+  local unitName = self:GetEntity():GetUnitName()
+  local currentPositionString = VectorToString(currentPosition)
+  local destinationString = VectorToString(self._currentDestination)
+  print(string.format(messageFormat, unitName, currentPositionString, destinationString))
 end
