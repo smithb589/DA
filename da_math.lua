@@ -15,14 +15,14 @@ function DACompareFloats(float1, float2, tolerance)
     return equal
 end
 
-function DDCompareVectors(vector1, vector2, tolerance)
+function DACompareVectors(vector1, vector2, tolerance)
   local xsEqual = DACompareFloats(vector1.x, vector2.x, tolerance)
   local ysEqual = DACompareFloats(vector1.y, vector2.y, tolerance)
   local zsEqual = DACompareFloats(vector1.z, vector2.z, tolerance)
   return xsEqual and ysEqual and zsEqual
 end
 
-function DDCompareVectors2D(vector1, vector2, tolerance)
+function DACompareVectors2D(vector1, vector2, tolerance)
   local xsEqual = DACompareFloats(vector1.x, vector2.x, tolerance)
   local ysEqual = DACompareFloats(vector1.y, vector2.y, tolerance)
   return xsEqual and ysEqual

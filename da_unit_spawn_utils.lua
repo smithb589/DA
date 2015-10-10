@@ -1,13 +1,13 @@
 
-if DDUnitSpawnUtils == nil then
-  DDUnitSpawnUtils = {}
+if DAUnitSpawnUtils == nil then
+  DAUnitSpawnUtils = {}
 end
 
-function DDUnitSpawnUtils:AttachSpawnPositionToEntity(unit, position)
+function DAUnitSpawnUtils:AttachSpawnPositionToEntity(unit, position)
   unit.spawnPosition = position
 end
 
-function DDUnitSpawnUtils:GetSpawnPositionFromEntity(unit)
+function DAUnitSpawnUtils:GetSpawnPositionFromEntity(unit)
   return unit.spawnPosition
 end
 
