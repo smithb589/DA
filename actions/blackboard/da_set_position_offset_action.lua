@@ -1,18 +1,17 @@
 
 require("libraries/da/da_class_utils")
-require("libraries/da/actions/da_action")
+require("libraries/da/actions/blackboard/da_set_position_action")
 
 -- Sets the blackboard position from an offset of the current position
 if DASetPositionOffsetAction == nil then
-  DASetPositionOffsetAction = daDeclareClass(DAAction, function(self, offsetVector)
-    DAAction.init(self)
+  DASetPositionOffsetAction = daDeclareClass(DASetPositionAction, function(self, offsetVector)
+    DASetPositionAction.init(self)
 
     self._offset = offsetVector
   end)
 end
 
-function DASetPositionOffsetAction:Execute()
+function DASetPositionOffsetAction:_DeterminePosition()
   local position = self:GetEntity():GetAbsOrigin() + self._offset
-  self:GetBlackboard():Put("position", position)
-  self:Success()
+  return position
 end
