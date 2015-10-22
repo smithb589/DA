@@ -4,8 +4,8 @@ require("libraries/da/da_unit_spawn_utils")
 require("libraries/da/actions/blackboard/da_set_position_action")
 
 if DASetPositionToSpawnAction == nil then
-  DASetPositionToSpawnAction = daDeclareClass(DASetPositionAction, function(self)
-    DASetPositionAction.init(self)
+  DASetPositionToSpawnAction = daDeclareClass(DASetPositionAction, function(self, blackboardValueName)
+    DASetPositionAction.init(self, blackboardValueName)
   end)
 end
 

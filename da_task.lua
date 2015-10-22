@@ -68,7 +68,19 @@ function DATask:FinishedExecuting()
 
 end
 
+function DATask:OutputSuccessMessage()
+
+end
+
+function DATask:OutputFailMessage()
+
+end
+
 function DATask:Fail()
+  if self:IsDebugOutputEnabled() then
+    self:OutputFailMessage()
+  end
+
   self:FinishedExecuting()
   if self._parentTask then
     self._parentTask:HandleChildFailure(self)
@@ -76,6 +88,10 @@ function DATask:Fail()
 end
 
 function DATask:Success()
+  if self:IsDebugOutputEnabled() then
+    self:OutputSuccessMessage()
+  end
+
   self:FinishedExecuting()
   if self._parentTask then
     self._parentTask:HandleChildSuccess(self)

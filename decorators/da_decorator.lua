@@ -35,6 +35,7 @@ end
 
 function DADecorator:FinishedExecuting()
   self._decoratedTask:FinishedExecuting()
+  DATask.FinishedExecuting(self)
 end
 
 function DADecorator:HandleChildFailure(childTask)

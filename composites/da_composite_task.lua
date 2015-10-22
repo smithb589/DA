@@ -47,6 +47,7 @@ function DACompositeTask:Execute()
     taskToRun:Execute()
   else
     print(string.format("Composite task didn't have a subtask to run at index %d.", self._runningNodeIndex))
+    self:Fail()
     --DeepPrintTable(self)
   end
 end

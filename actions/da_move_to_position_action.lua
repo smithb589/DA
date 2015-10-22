@@ -6,9 +6,10 @@ require("libraries/da/da_constants")
 require("libraries/da/da_utils")
 
 if DAMoveToPositionAction == nil then
-  DAMoveToPositionAction = daDeclareClass(DAAction, function(self)
+  DAMoveToPositionAction = daDeclareClass(DAAction, function(self, blackboardValueName)
     DAAction.init(self)
 
+    self._blackboardValueName = blackboardValueName
     self._currentDestination = nil
     self._lastPosition = nil
     self._stoppedMovingTime = 0
@@ -21,7 +22,7 @@ end
 function DAMoveToPositionAction:PrepareToExecute()
   self._stoppedMovingTime = 0
   self._lastPathCheckTime = 0
-  self._currentDestination = self:GetBlackboard():Get("position")
+  self._currentDestination = self:GetBlackboard():Get(self._blackboardValueName)
   if self._currentDestination then
     local entity = self:GetEntity()
     self._lastPosition = entity:GetAbsOrigin()
@@ -43,6 +44,10 @@ function DAMoveToPositionAction:Execute()
   if reachedDestination then
     self:Success()
   elseif self:_IsMovementInterrupted(currentPosition) then
+    if self:IsDebugOutputEnabled() then
+      print("movement failed.")
+      print(string.format("Compare vectors returns: %s", tostring(DACompareVectors2D(currentPosition, self._currentDestination, VECTOR_COMPARE_TOLERANCE))))
+    end
     self:Fail()
   else
     if self:IsDebugOutputEnabled() then
@@ -65,12 +70,12 @@ function DAMoveToPositionAction:_IsMovementInterrupted(currentPosition)
   local stoppedMoving = self:_StoppedMoving(currentPosition)
   local isTurning = self:_IsTurning()
   local movementInterrupted = not canFindPath or (stoppedMoving and not isTurning)
-  --[[
-  print(string.format("Can find path: %s", tostring(canFindPath)))
-  print(string.format("Stopped moving: %s", tostring(stoppedMoving)))
-  print(string.format("Is turning: %s", tostring(isTurning)))
-  print(string.format("movementInterrupted: %s", tostring(movementInterrupted)))
-  ]]
+  if movementInterrupted and self:IsDebugOutputEnabled() then
+    print(string.format("Can find path: %s", tostring(canFindPath)))
+    print(string.format("Stopped moving: %s", tostring(stoppedMoving)))
+    print(string.format("Is turning: %s", tostring(isTurning)))
+    print(string.format("movementInterrupted: %s", tostring(movementInterrupted)))
+  end
   return movementInterrupted
 end
 
@@ -89,13 +94,18 @@ function DAMoveToPositionAction:_StoppedMoving(currentPosition)
     self._stoppedMovingTime = 0
     self._stoppedMoving = false
   end
+
+  if stoppedMoving and self:IsDebugOutputEnabled() then
+    print(string.format("Distance to destination: %f", (currentPosition - self._currentDestination):Length2D()))
+  end
+
   return stoppedMoving
 end
 
 function DAMoveToPositionAction:_IsTurning()
   local currentForward = self:GetEntity():GetForwardVector()
   local similarity = DotProduct2D(currentForward, self._lastForwardVector)
-  return similarity < 0.95
+  return similarity < 0.99
 end
 
 function DAMoveToPositionAction:_CanFindPath(currentPosition)

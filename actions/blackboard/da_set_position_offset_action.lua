@@ -4,8 +4,8 @@ require("libraries/da/actions/blackboard/da_set_position_action")
 
 -- Sets the blackboard position from an offset of the current position
 if DASetPositionOffsetAction == nil then
-  DASetPositionOffsetAction = daDeclareClass(DASetPositionAction, function(self, offsetVector)
-    DASetPositionAction.init(self)
+  DASetPositionOffsetAction = daDeclareClass(DASetPositionAction, function(self, offsetVector, blackboardValueName)
+    DASetPositionAction.init(self, blackboardValueName)
 
     self._offset = offsetVector
   end)
