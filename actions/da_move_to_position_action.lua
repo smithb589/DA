@@ -48,11 +48,12 @@ function DAMoveToPositionAction:Execute()
       print("movement failed.")
       print(string.format("Compare vectors returns: %s", tostring(DACompareVectors2D(currentPosition, self._currentDestination, VECTOR_COMPARE_TOLERANCE))))
     end
+    self:GetEntity():Stop()
     self:Fail()
   else
-    if self:IsDebugOutputEnabled() then
-      self:_OutputDebugRunningInformation(currentPosition)
-    end
+    -- if self:IsDebugOutputEnabled() then
+    --   self:_OutputDebugRunningInformation(currentPosition)
+    -- end
     self._lastPosition = entity:GetAbsOrigin()
     self._lastForwardVector = entity:GetForwardVector()
   end
@@ -62,7 +63,9 @@ function DAMoveToPositionAction:FinishedExecuting()
   self._currentDestination = nil
   self._lastPosition = nil
   self._stoppedMovingTime = 0
+  self._stoppedMoving = false
   self._lastPathCheckTime = 0
+  self._lastForwardVector = nil
 end
 
 function DAMoveToPositionAction:_IsMovementInterrupted(currentPosition)
