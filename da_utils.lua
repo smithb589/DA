@@ -19,3 +19,15 @@ end
 function VectorToString(vector)
   return string.format("<%f, %f, %f>", vector.x, vector.y, vector.z)
 end
+
+function ConvertIndiciesToEntities(indices)
+  local entities = {}
+  for _, index in ipairs(indices) do
+    local entity = EntIndexToHScript(index)
+    if entity then
+      table.insert(entities, entity)
+    end
+  end
+
+  return entities
+end
