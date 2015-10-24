@@ -36,3 +36,11 @@ function DAIsAbilityUsableCondition:_GetAbility()
 
   return ability
 end
+
+function DATask:OutputSuccessMessage()
+  print(string.format("Ability %s was usable for %s.", self._abilityName, self:GetEntity():GetUnitName()))
+end
+
+function DATask:OutputFailMessage()
+  print(string.format("Ability %s was not usable for %s.", self._abilityName, self:GetEntity():GetUnitName()))
+end

@@ -27,6 +27,7 @@ function DAUseAbilityAction:Execute()
     end
   else
     print(string.format("No cast end time for ability %s.", self._abilityName))
+    self:Fail()
   end
 end
 

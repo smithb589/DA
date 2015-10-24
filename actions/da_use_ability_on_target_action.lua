@@ -6,50 +6,66 @@ require("libraries/da/actions/da_action")
 require("libraries/da/orders/da_cast_target_order")
 
 if DAUseAbilityOnTargetAction == nil then
-  DAUseAbilityOnTargetAction = daDeclareClass(DAAction, function(self, abilityName)
+  DAUseAbilityOnTargetAction = daDeclareClass(DAAction, function(self, abilityName, blackboardTargetValueName)
     DAAction.init(self)
     self._abilityName = abilityName
-    self._target = nil
-    self._orderedUnit = nil
-    self._abilityIndex = nil
+    self._targetValueName = blackboardTargetValueName
+
+    self._castEndTime = nil
   end)
 end
 
 function DAUseAbilityOnTargetAction:PrepareToExecute()
-  self._target = self:_DetermineTarget()
-  self._abilityIndex = self:_GetAbilityIndex()
-  self._orderedUnit = self:GetEntity()
+  local target = self:_DetermineTarget()
+  local ability = self:_GetAbility()
+  local orderedUnit = self:GetEntity()
+
+  if target and ability and orderedUnit then
+    orderedUnit:CastAbilityOnTarget(target, ability, target:GetPlayerOwner():entindex())
+    local animationDuration = ability:GetCastPoint() + ability:GetBackswingTime()
+    self._castEndTime = GameRules:GetGameTime() + animationDuration
+  end
 end
 
 function DAUseAbilityOnTargetAction:Execute()
-  if self._target and self._orderedUnit and self._abilityIndex then
-    local abilityOrder = DACastTargetOrder(self._orderedUnit, self._abilityIndex, self._target)
-    abilityOrder:IssueOrder()
-    self:Success()
+  if self._castEndTime then
+    if GameRules:GetGameTime() >= self._castEndTime then
+      self:Success()
+    end
+    -- local abilityOrder = DACastTargetOrder(self._orderedUnit, self._ability:entindex(), self._target)
+    -- abilityOrder:IssueOrder()
   else
     self:Fail()
   end
 end
 
 function DAUseAbilityOnTargetAction:FinishedExecuting()
-  self._target = nil
-  self._abilityIndex = nil
-  self._orderedUnit = nil
+  self._castEndTime = nil
 end
 
 function DAUseAbilityOnTargetAction:_DetermineTarget()
-  print("Base version of _DetermineTarget called. Did you forget to override?")
-  return nil
+  local target = self:GetBlackboard():Get(self._targetValueName)
+  return target
 end
 
-function DAUseAbilityOnTargetAction:_GetAbilityIndex()
-  local abilityIndex = nil
+function DAUseAbilityOnTargetAction:_GetAbility()
+  local ability = nil
   local entity = self:GetEntity()
 
   if entity then
-    local ability = entity:FindAbilityByName(self._abilityName)
-    abilityIndex = ability:entindex()
+    ability = entity:FindAbilityByName(self._abilityName)
   end
 
-  return abilityIndex
+  return ability
 end
+
+function DAUseAbilityOnTargetAction:OutputSuccessMessage()
+  local format = "%s cast ability %s."
+  print(string.format(format, self:GetEntity():GetUnitName(), self._abilityName))
+end
+
+function DAUseAbilityOnTargetAction:OutputFailMessage()
+  local format = "Failed to cast ability %s."
+  print(string.format(format, self._abilityName))
+end
+
